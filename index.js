@@ -12,6 +12,7 @@ const app = express()
 const { ROUTES_PREFIX } = require('./configs/app_configs')
 
 const account_router = require('./routes/account')
+const user_info_router = require('./routes/user_info')
 
 dotenv.config()
 
@@ -41,6 +42,7 @@ app.use(function(req, res, next) {
 })
 
 app.use(ROUTES_PREFIX + "", account_router)
+app.use(ROUTES_PREFIX + "", user_info_router)
 
 app.listen(process.env.PORT || 8800 , () => {
     console.log("Profile service is running...")
