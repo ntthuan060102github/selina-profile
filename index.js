@@ -17,7 +17,7 @@ const user_info_router = require('./routes/user_info')
 dotenv.config()
 
 mongoose.connect(
-    process.env.MONGO_DB_URL, //|| "mongodb+srv://Zeta:thuan2002@cluster0.pmjo1.mongodb.net/Selina-Staging?retryWrites=true&w=majority",
+    process.env.MONGO_DB_URL, // || "mongodb+srv://Zeta:thuan2002@cluster0.pmjo1.mongodb.net/Selina-Staging?retryWrites=true&w=majority",
     { useNewUrlParser: true },
     () => {
         console.log('Connected to MongoDB...')
