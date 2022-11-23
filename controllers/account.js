@@ -109,7 +109,7 @@ const re_send_otp = async (req, res, next) => {
             return res.json(response_data(
                 input_validate.array(), 
                 status_code=4,
-                message="Vui lòng kiểm tra lịa email của bạn!"
+                message="Vui lòng kiểm tra lại email của bạn!"
             ))
         }
 
@@ -123,8 +123,56 @@ const re_send_otp = async (req, res, next) => {
     }
 }
 
+const recover_password = async (req, res, next) => {
+    try {
+        input_validate = validationResult(req)
+
+        if (!input_validate.isEmpty()) {
+            return res.json(response_data(
+                input_validate.array(), 
+                status_code=4,
+                message="Vui lòng kiểm tra lại email của bạn!"
+            ))
+        }
+        const characters_numbers_spec_chars = "qwertyuiopasdfghjklzxcvbnm!@#$%^&*()_+0123456789"
+        const body = req.body
+        const email = body?.email
+
+        
+        let new_password = ""
+        
+        for(let i = 0; i < 8; i++) {
+            new_password += characters_numbers_spec_chars[
+                Math.floor(Math.random() * characters_numbers_spec_chars.length)
+            ]
+        }
+
+        const curr_user = await UserInformationSchema.updateOne(
+            {
+                email: email
+            }, 
+            {
+                password: new_password
+            }
+        )
+        if (!curr_user.matchedCount) {
+            return res.json(response_data(
+                "email_does_not_match", 
+                status_code=4,
+                message="Không có tài khoản nào được đăng ký với email này!"
+            ))
+        }
+        send_mail(email, "[Selina] Recover Password", new_password)
+        return res.json(response_data())
+    }
+    catch (err) {
+        return res.json(response_data(data=err.message, status_code=4, message="Lỗi hệ thống!"))
+    }
+}
+
 module.exports = {
     create_new_account,
     approve_account,
-    re_send_otp
+    re_send_otp,
+    recover_password
 }

@@ -31,7 +31,7 @@ const send_mail = async (to, subject, html) => {
         html: html,
     }
 
-    console.log(await transporter.sendMail(email_config))
+    await transporter.sendMail(email_config)
 }
 
 module.exports = { send_mail }
