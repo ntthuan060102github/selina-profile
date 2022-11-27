@@ -1,4 +1,5 @@
 const cryptoJS = require('crypto-js')
+const axios = require('axios')
 const { validationResult } = require('express-validator');
 const UserInformationSchema = require('../models/UserInformation')
 const password_encode_key = require('../configs/app_configs')
@@ -6,6 +7,9 @@ const response_data = require('../helpers/response')
 const generate_otp = require('../helpers/generate_otp')
 const { send_mail } = require('../helpers/send_email')
 const { redis_base } = require('../helpers/redis_base')
+const INIT_ROLE_PERMISSIONS = require('../configs/init_role_permissions')
+const SELINA_SERVICE_INFOS = require('../configs/selina_service_infos')
+const { APP_ENV } = require('../configs/app_configs')
 
 const generate_otp_and_send_email = async (email) => {
     try {
@@ -51,6 +55,20 @@ const create_new_account = async (req, res, next) => {
             return res.json(response_data(data="invalid_input", status_code=4, message=validate))
         }
         register_res = Boolean(await new_account.save())
+
+        const user_id = new_account.user_id
+        const permissions = INIT_ROLE_PERMISSIONS[new_account.user_type].permissions
+
+        if (Boolean(permissions)) {
+            axios.post(
+                `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/add-user-permissions`,
+                {
+                    user_id: user_id,
+                    permission_codes: permissions
+                }
+            )
+        }
+
 
         if (register_res) {
             generate_otp_and_send_email(email)
@@ -169,6 +187,7 @@ const recover_password = async (req, res, next) => {
         return res.json(response_data(data=err.message, status_code=4, message="Lỗi hệ thống!"))
     }
 }
+
 
 module.exports = {
     create_new_account,
