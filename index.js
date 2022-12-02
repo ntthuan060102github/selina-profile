@@ -30,7 +30,7 @@ app.use(express.json())
 app.use(helmet())
 app.use(morgan("common"))
 app.use(cors());
-// app.use(cors({origin: process.env.CLIENT_URL}))
+app.use(cors({origin: process.env.CLIENT_URL}))
 
 // const upload = multer({
 //     storage: multer.memoryStorage()
