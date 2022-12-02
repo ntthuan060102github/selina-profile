@@ -143,6 +143,7 @@ const re_send_otp = async (req, res, next) => {
 
 const recover_password = async (req, res, next) => {
     try {
+        console.log(res)
         input_validate = validationResult(req)
 
         if (!input_validate.isEmpty()) {

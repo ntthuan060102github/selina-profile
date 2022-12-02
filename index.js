@@ -27,17 +27,7 @@ mongoose.connect(
 app.use(express.json())
 app.use(helmet())
 app.use(morgan("common"))
-app.use(cors({
-    origin:'http://localhost:3000', 
-    credentials:true,
-    optionSuccessStatus:200
-}))
-
-// const upload = multer({
-//     storage: multer.memoryStorage()
-// })
-// app.use(upload.single())
-
+app.use(cors())
 
 app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', "*")
