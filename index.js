@@ -4,9 +4,7 @@ const dotenv = require('dotenv')
 const helmet = require('helmet')
 const morgan = require('morgan')
 const multer = require('multer')
-const path = require('path')
 const cors = require('cors');
-const firebase = require('./helpers/firebase')
 
 const app = express()
 
@@ -30,7 +28,6 @@ app.use(express.json())
 app.use(helmet())
 app.use(morgan("common"))
 app.use(cors());
-app.use(cors({origin: process.env.CLIENT_URL}))
 
 // const upload = multer({
 //     storage: multer.memoryStorage()
