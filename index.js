@@ -17,7 +17,7 @@ const upload_router = require('./routes/upload_file_to_fb')
 dotenv.config()
 
 mongoose.connect(
-    process.env.MONGO_DB_URL || "mongodb+srv://Zeta:thuan2002@cluster0.pmjo1.mongodb.net/Selina-Staging?retryWrites=true&w=majority",
+    process.env.MONGO_DB_URL || "mongodb+srv://Zeta:thuan2002@cluster0.pmjo1.mongodb.net/Selina?retryWrites=true&w=majority",
     { useNewUrlParser: true },
     () => {
         console.log('Connected to MongoDB...')
@@ -38,13 +38,13 @@ app.get("/", (req, res) => {
     res.send(`Selina - Profile Service (${process.env.app_env})`)
 })
 
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', "*")
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
-    res.setHeader('Access-Control-Allow-Credentials', true)
-    next()
-})
+// app.use(function (req, res, next) {
+//     res.setHeader('Access-Control-Allow-Origin', "*")
+//     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE')
+//     res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type')
+//     res.setHeader('Access-Control-Allow-Credentials', true)
+//     next()
+// })
 
 app.use(ROUTES_PREFIX + "", account_router)
 app.use(ROUTES_PREFIX + "", user_info_router)
