@@ -5,6 +5,9 @@ const SELINA_SERVICE_INFOS = {
         },
         production: {
             domain: "https://selina-auth.herokuapp.com/selina-auth-api"
+        },
+        local: {
+            domain: "http://127.0.0.1:8800/selina-auth-api"
         }
     }
 }

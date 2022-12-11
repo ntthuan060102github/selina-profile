@@ -72,7 +72,7 @@ const create_new_account = async (req, res, next) => {
 
         if (register_res) {
             generate_otp_and_send_email(email)
-            return res.json(response_data())
+            return res.json(response_data(data={}, status_code=1, message="Đăng ký tài khoản thành công!"))
         }
         else {
             return res.json(response_data(data={}, status_code=4, message="Đăng ký không thành công!"))

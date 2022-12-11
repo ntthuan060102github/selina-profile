@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const helmet = require('helmet')
 const morgan = require('morgan')
 const multer = require('multer')
-const cors = require('cors');
+const cors = require('cors')
 
 const app = express()
 
@@ -44,7 +44,6 @@ app.use(ROUTES_PREFIX + "", account_router)
 app.use(ROUTES_PREFIX + "", user_info_router)
 app.use(ROUTES_PREFIX + "", upload_router)
 
-app.listen(process.env.PORT || 8800 , () => {
+app.listen(process.env.PORT || 8801 , () => {
     console.log("Profile service is running...")
 })
-
