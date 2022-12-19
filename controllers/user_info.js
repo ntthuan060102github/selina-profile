@@ -1,6 +1,6 @@
 const cryptoJS = require('crypto-js')
 const { validationResult } = require('express-validator');
-const UserInformationSchema = require('../models/UserInformation')
+const UserInformation = require('../models/UserInformation')
 const { password_encode_key, SECRET_KEY } = require('../configs/app_configs')
 const response_data = require('../helpers/response')
 const { send_mail } =require("../helpers/send_email")
@@ -16,7 +16,7 @@ const get_user_info_by_id = async (req, res, next) => {
         }
 
         user_id= Number.parseInt(user_id)
-        user_info = await UserInformationSchema.findOne({ user_id: user_id })
+        user_info = await UserInformation.findOne({ user_id: user_id })
         if (Boolean(user_info)) {
             user_data = user_info?._doc
             password = user_data.password
@@ -46,13 +46,31 @@ const get_user_info_by_id = async (req, res, next) => {
     }
 }
 
+const get_list_user_info_by_id = async (req, res, next) => {
+    try {
+        const data = req.body
+        const list_user_id = data.list_user_id
+
+        const list_user_info = await UserInformation.find({
+            user_id: {
+                $in: list_user_id
+            }
+        })
+        
+        return res.json(response_data(list_user_info))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
 const get_user_info_by_email = async (req, res, next) => {
     try {
         data = req.body
         email = data.email
         secret_key = data?.secret_key
 
-        user_info = await UserInformationSchema.findOne({ email: email })
+        user_info = await UserInformation.findOne({ email: email })
 
         if (Boolean(user_info)) {
             user_data = user_info?._doc
@@ -85,5 +103,6 @@ const get_user_info_by_email = async (req, res, next) => {
 
 module.exports = { 
     get_user_info_by_id, 
+    get_list_user_info_by_id,
     get_user_info_by_email 
 }
