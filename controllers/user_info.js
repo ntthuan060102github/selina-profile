@@ -4,6 +4,8 @@ const UserInformation = require('../models/UserInformation')
 const { password_encode_key, SECRET_KEY } = require('../configs/app_configs')
 const response_data = require('../helpers/response')
 const { send_mail } =require("../helpers/send_email")
+const get_session_data = require("../helpers/get_session_data")
+const upload_image = require("../helpers/upload_image_to_storage")
 
 const get_user_info_by_id = async (req, res, next) => {
     try {
@@ -101,8 +103,71 @@ const get_user_info_by_email = async (req, res, next) => {
     }
 }
 
+const modify_personal_info = async (req, res, next) => {
+    try {
+        const input_validate = validationResult(req)
+        if (!input_validate.isEmpty()) {
+            return res.json(response_data(
+                data=input_validate.array(),
+                status_code=4,
+                message=''
+            ))
+        }
+
+        const session_data = JSON.parse(await get_session_data(req))
+        const user_id = session_data?.user_id
+        const original_record = await UserInformation.findOne({ user_id: user_id })
+        if (!Boolean(original_record)) {
+            return res.json(response_data(
+                data='user_not_found',
+                status_code=4,
+                message='Tài khoản không tồn tại!'
+            ))
+        }
+
+        let user_image = req.file
+        if (user_image && !user_image.mimetype.includes("image")) {
+            return res.json(response_data(
+                data='image_invalid',
+                status_code=4,
+                message='Hình ảnh không hợp lệ!'
+            ))
+        }
+
+        let query = {}
+        if (Boolean(user_image)) {
+            const upload_image_res = await upload_image(user_image)
+            query['avatar_url'] = upload_image_res?.data?.url
+        }
+        let data = req?.body
+        for (const key of ['full_name', 'phone_num', 'address', 'gender']) {
+            if (data[key] && data[key] !== original_record[key]) {
+                query[key] = data[key]
+            }
+        }
+
+        const update_result = await UserInformation.updateOne(
+            { user_id: user_id },
+            query,
+            { runValidators: true, context: 'query' }
+        )
+        if (!update_result?.acknowledged) {
+            return res.json(response_data(
+                data='no_change',
+                status_code=1,
+                message='Không có thay đổi'
+            ))
+        }
+        return res.json(response_data(data='success', status=1, message='Thành công'))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
 module.exports = { 
     get_user_info_by_id, 
     get_list_user_info_by_id,
-    get_user_info_by_email 
+    get_user_info_by_email,
+    modify_personal_info
 }
