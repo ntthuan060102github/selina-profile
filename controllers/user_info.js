@@ -165,9 +165,20 @@ const modify_personal_info = async (req, res, next) => {
     }
 }
 
+const get_personal_info = async (req, res) => {
+    try {
+        const session = JSON.parse(await get_session_data(req))
+        return res.json(response_data(data=session, status_code=1, message=""))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
 module.exports = { 
     get_user_info_by_id, 
     get_list_user_info_by_id,
     get_user_info_by_email,
-    modify_personal_info
+    get_personal_info,
+    modify_personal_info,
 }
