@@ -31,7 +31,8 @@ const get_user_info_by_id = async (req, res, next) => {
                 "avatar_url": user_data.avatar_url,
                 "user_type": user_data.user_type,
                 "account_status": user_data.account_status,
-                "gender": user_data.gender
+                "gender": user_data.gender,
+                "address": user_data.address
             }
 
             if (secret_key === SECRET_KEY) {
@@ -86,7 +87,8 @@ const get_user_info_by_email = async (req, res, next) => {
                 "avatar_url": user_data.avatar_url,
                 "user_type": user_data.user_type,
                 "account_status": user_data.account_status,
-                "gender": user_data.gender
+                "gender": user_data.gender,
+                "address": user_data.address
             }
 
             if (secret_key === SECRET_KEY) {
