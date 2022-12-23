@@ -10,7 +10,8 @@ const {
     get_user_info_by_email,
     get_list_user_info_by_id,
     get_personal_info,
-    modify_personal_info
+    modify_personal_info,
+    get_all_user
 } = require('../controllers/user_info')
 
 const {
@@ -26,6 +27,7 @@ router.post("/get-user-info-by-email", get_user_info_by_email)
 router.post("/get-list-user-info-by-id", get_list_user_info_by_id)
 
 router.get("/get-personal-info", auth_user_middleware, get_personal_info)
+router.get("/get-all-users", auth_user_middleware, get_all_user)
 router.post(
     "/modify-personal-info",
     auth_user_middleware,

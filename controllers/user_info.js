@@ -185,10 +185,39 @@ const get_personal_info = async (req, res) => {
     }
 }
 
+const get_all_user = async (req, res) => {
+    try {
+        const session = JSON.parse(await get_session_data(req))
+
+        if (session.user_type !== "admin") {
+            return res.json(response_data(data="no_permit", status_code=4, message=""))
+        }
+
+        const users = await UserInformation.find({
+            user_type: {
+                $ne: "admin"
+            }
+        })
+
+        const res_data = users.map(user => {
+                const new_user = user.toObject()
+                delete new_user.password
+                return new_user
+            }
+        )
+
+        return res.json(response_data(res_data))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
 module.exports = { 
     get_user_info_by_id, 
     get_list_user_info_by_id,
     get_user_info_by_email,
     get_personal_info,
     modify_personal_info,
+    get_all_user
 }
