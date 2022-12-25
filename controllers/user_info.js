@@ -1,4 +1,5 @@
 const cryptoJS = require('crypto-js')
+const axios = require('axios')
 const { validationResult } = require('express-validator');
 const UserInformation = require('../models/UserInformation')
 const { password_encode_key, SECRET_KEY } = require('../configs/app_configs')
@@ -6,6 +7,8 @@ const response_data = require('../helpers/response')
 const { send_mail } =require("../helpers/send_email")
 const get_session_data = require("../helpers/get_session_data")
 const upload_image = require("../helpers/upload_image_to_storage")
+const { SELINA_SERVICE_INFOS } = require("../configs/selina_service_infos")
+const { APP_ENV } = require("../configs/app_configs")
 
 const get_user_info_by_id = async (req, res, next) => {
     try {
@@ -213,11 +216,110 @@ const get_all_user = async (req, res) => {
     }
 }
 
+const ban_user = async (req, res) => {
+    try {
+        const input_validate = validationResult()
+        if (!input_validate.isEmpty()) {
+            return res.json(response_data(
+                data=input_validate.array(),
+                status_code=4,
+                message=''
+            ))
+        }
+
+        const session = JSON.parse(await get_session_data(req))
+        const user_id = Number(req?.body?.user_id)
+
+        if (session?.user_type !== "admin") {
+            return res.json(response_data(data="no_permit", status_code=4, message="Không có quyền thực hiện"))
+        }
+        const update_result = await UserInformation.updateOne(
+            {
+                user_id: user_id,
+                account_status: "normal"
+            },
+            {
+                account_status: "banned"
+            }
+        )
+        if (update_result.matchedCount === 0) {
+            return res.json(response_data(data="user_not_found", status_code=4, message="Không thể chặn người dùng"))
+        }
+
+        const get_token_response = await axios.post(
+            `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/get-user-tokens`,
+            {
+                "user_id": user_id
+            }
+        )
+        if (get_token_response.data.status_code !== 1) {
+            return res.json(response_data(data="call_api_failure", status_code=4, message="Lỗi hệ thống"))
+        }
+
+        const token = get_token_response.data.data
+        const options = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        const logout_response = await axios.get(
+            `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/logout`,
+            {},
+            options
+        )
+        if (logout_response.data.status_code !== 1) {
+            return res.json(response_data(data='call_api_failure', status_code=4, message='Lỗi hệ thống'))   
+        }
+        return res.json(response_data(data='success', status_code=1, message=''))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
+const unlock_user = async (req, res) => {
+    try {
+        const input_validate = validationResult()
+        if (!input_validate.isEmpty()) {
+            return res.json(response_data(
+                data=input_validate.array(),
+                status_code=4,
+                message=''
+            ))
+        }
+
+        const session = JSON.parse(await get_session_data(req))
+        const user_id = Number(req?.body?.user_id)
+
+        if (session?.user_type !== "admin") {
+            return res.json(response_data(data="no_permit", status_code=4, message="Không có quyền thực hiện"))
+        }
+        const update_result = await UserInformation.updateOne(
+            {
+                user_id: user_id,
+                account_status: "banned",
+            },
+            {
+                account_status: "normal"
+            }
+        )
+        if (update_result.matchedCount === 0) {
+            return res.json(response_data(data="user_not_found", status_code=4, message="Không thể bỏ chặn người dùng"))
+        }
+        return res.json(response_data(data='success', status_code=1, message=''))
+    }
+    catch (err) {
+        return res.json(response_data(data={}, status_code=4, message=err.message))
+    }
+}
+
 module.exports = { 
     get_user_info_by_id, 
     get_list_user_info_by_id,
     get_user_info_by_email,
     get_personal_info,
     modify_personal_info,
-    get_all_user
+    get_all_user,
+    ban_user,
+    unlock_user
 }

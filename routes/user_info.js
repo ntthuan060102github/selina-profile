@@ -11,11 +11,14 @@ const {
     get_list_user_info_by_id,
     get_personal_info,
     modify_personal_info,
-    get_all_user
+    get_all_user,
+    ban_user,
+    unlock_user
 } = require('../controllers/user_info')
 
 const {
-    personal_info_modification_form_validator
+    personal_info_modification_form_validator,
+    user_id_input_validator
 } = require('../validation/user_info')
 
 const {
@@ -34,6 +37,20 @@ router.post(
     personal_info_modification_form_validator(),
     upload.single('image'),
     modify_personal_info
+)
+
+router.post(
+    "/ban-user",
+    auth_user_middleware,
+    user_id_input_validator(),
+    ban_user
+)
+
+router.post(
+    "/unlock-user",
+    auth_user_middleware,
+    user_id_input_validator(),
+    unlock_user
 )
 
 module.exports = router

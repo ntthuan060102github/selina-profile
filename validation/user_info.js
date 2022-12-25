@@ -9,6 +9,13 @@ const personal_info_modification_form_validator = () => {
 	]
 }
 
+const user_id_input_validator = () => {
+	return [
+		check("user_id").trim().isInt({ min: 1 })
+	]
+}
+
 module.exports = {
-	personal_info_modification_form_validator
+	personal_info_modification_form_validator,
+	user_id_input_validator
 }
