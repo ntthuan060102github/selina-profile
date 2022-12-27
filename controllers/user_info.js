@@ -7,7 +7,7 @@ const response_data = require('../helpers/response')
 const { send_mail } =require("../helpers/send_email")
 const get_session_data = require("../helpers/get_session_data")
 const upload_image = require("../helpers/upload_image_to_storage")
-const { SELINA_SERVICE_INFOS } = require("../configs/selina_service_infos")
+const SELINA_SERVICE_INFOS = require("../configs/selina_service_infos")
 const { APP_ENV } = require("../configs/app_configs")
 
 const get_user_info_by_id = async (req, res, next) => {
@@ -218,7 +218,7 @@ const get_all_user = async (req, res) => {
 
 const ban_user = async (req, res) => {
     try {
-        const input_validate = validationResult()
+        const input_validate = validationResult(req)
         if (!input_validate.isEmpty()) {
             return res.json(response_data(
                 data=input_validate.array(),
@@ -239,7 +239,9 @@ const ban_user = async (req, res) => {
                 account_status: "normal"
             },
             {
-                account_status: "banned"
+                $set: {
+                    account_status: "banned"
+                }
             }
         )
         if (update_result.matchedCount === 0) {
@@ -256,7 +258,7 @@ const ban_user = async (req, res) => {
             return res.json(response_data(data="call_api_failure", status_code=4, message="Lỗi hệ thống"))
         }
 
-        const token = get_token_response.data.data
+        const token = get_token_response.data.data.token
         const options = {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -264,7 +266,6 @@ const ban_user = async (req, res) => {
         }
         const logout_response = await axios.get(
             `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/logout`,
-            {},
             options
         )
         if (logout_response.data.status_code !== 1) {
@@ -279,7 +280,7 @@ const ban_user = async (req, res) => {
 
 const unlock_user = async (req, res) => {
     try {
-        const input_validate = validationResult()
+        const input_validate = validationResult(req)
         if (!input_validate.isEmpty()) {
             return res.json(response_data(
                 data=input_validate.array(),
@@ -300,7 +301,9 @@ const unlock_user = async (req, res) => {
                 account_status: "banned",
             },
             {
-                account_status: "normal"
+                $set: {
+                    account_status: "normal"
+                }
             }
         )
         if (update_result.matchedCount === 0) {
