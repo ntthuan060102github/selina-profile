@@ -175,12 +175,12 @@ const get_personal_info = async (req, res) => {
         const session = JSON.parse(await get_session_data(req))
         const user_id = session?.user_id
         const info = await UserInformation.findOne(
-            { user_id: user_id },
-            'user_id full_name phone_num email device_token avatar_url user_type account_status gender -_id'
+            { user_id: user_id }
         )
         if (!info) {
             return res.json(response_data(data='', status_code=1, message='Tài khoản không tồn tại'))
         }
+        console.log(info)
         return res.json(response_data(data=info, status_code=1, message=""))
     }
     catch (err) {
