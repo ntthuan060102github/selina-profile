@@ -7,7 +7,7 @@ const create_account_validator = () => {
         check("password").isString(),
         // check("device_token").isString(),
         check("user_type").isString(),
-        check("phone_num").isMobilePhone(),
+        // check("phone_num").isMobilePhone(),
         check("gender").isBoolean()
     ]
 }
