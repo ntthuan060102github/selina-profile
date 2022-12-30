@@ -42,7 +42,7 @@ const create_new_account = async (req, res, next) => {
         }
         new_account_info = {
             full_name: data.full_name,
-            phone_num: data.phone_num,
+            phone_num: data.phone_num || "",
             email: data.email,
             password: data.password,
             user_type: data.user_type || "normal_user",

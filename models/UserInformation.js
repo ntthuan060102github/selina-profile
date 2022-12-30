@@ -5,7 +5,7 @@ const UserInformation = new mongoose.Schema(
     {
         user_id: { type: Number },
         full_name: { type: String, required: true, max_length: 50 },
-        phone_num : { type: String, required: true, length: 10 },
+        phone_num : { type: String, required: false, length: 10 },
         email: { type: String, required: true, unique: true, max_length: 50 },
         password: { type: String, required: true },
         device_token: { type: String, required: false, default: null },
