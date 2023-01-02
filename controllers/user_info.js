@@ -163,7 +163,11 @@ const modify_personal_info = async (req, res, next) => {
                 message='Không có thay đổi'
             ))
         }
-        return res.json(response_data(data='success', status=1, message='Thành công'))
+
+        const info = await UserInformation.findOne(
+            { user_id: user_id }
+        )
+        return res.json(response_data(data=info, status=1, message='Thành công'))
     }
     catch (err) {
         return res.json(response_data(data={}, status_code=4, message=err.message))
