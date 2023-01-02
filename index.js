@@ -6,18 +6,19 @@ const morgan = require('morgan')
 const multer = require('multer')
 const cors = require('cors')
 
+dotenv.config()
+
 const app = express()
 
-const { ROUTES_PREFIX } = require('./configs/app_configs')
+const { ROUTES_PREFIX, MONGO_DB_URL, APP_ENV } = require('./configs/app_configs')
 
 const account_router = require('./routes/account')
 const user_info_router = require('./routes/user_info')
 const upload_router = require('./routes/upload_file_to_fb')
 
-dotenv.config()
 
 mongoose.connect(
-    process.env.MONGO_DB_URL || "mongodb+srv://Zeta:thuan2002@cluster0.pmjo1.mongodb.net/Selina?retryWrites=true&w=majority",
+    MONGO_DB_URL,
     { useNewUrlParser: true },
     () => {
         console.log('Connected to MongoDB...')
@@ -38,12 +39,12 @@ app.use(function (req, res, next) {
 })
 
 app.get("/", (req, res) => {
-    res.send(`Selina - Profile Service (${process.env.app_env})`)
+    res.send(`Selina - Profile Service (${APP_ENV})`)
 })
 app.use(ROUTES_PREFIX + "", account_router)
 app.use(ROUTES_PREFIX + "", user_info_router)
 app.use(ROUTES_PREFIX + "", upload_router)
 
 app.listen(process.env.PORT || 8801 , () => {
-    console.log("Profile service is running...")
+    console.log(`Profile service (env: ${APP_ENV}) is running...`)
 })
