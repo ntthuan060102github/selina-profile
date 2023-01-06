@@ -14,7 +14,34 @@ const { APP_ENV } = require('../configs/app_configs')
 const generate_otp_and_send_email = async (email) => {
     try {
         const otp = await generate_otp(email, "otp_create_account_")
-        send_mail(email, "[Selina] - OTP đăng ký tài khoản", otp)
+        send_mail(
+            email, 
+            "[Selina] - Xác thực tài khoản.", 
+            `
+                <div>
+                    <div style="background-color:#f0f5fa;">
+                        <div style="padding-bottom:10px; padding-top:10px; margin: 0 auto; border-radius: 8px;">
+                            <div style="width:100%; border-radius: 8px;">
+                                <img style="border-radius: 8px; text-align:center; width:125px; margin: 20px auto; display: block;" src="https://firebasestorage.googleapis.com/v0/b/selina-d8690.appspot.com/o/Selina%20small.png?alt=media&token=9aeb31a4-6a94-4743-832f-6c065ca0dbdf">
+                            </div>
+                        </div>
+                        <div style="background-color:#fff; padding-bottom:20px; padding-top:20px">
+                            <div style="vertical-align:middle; width:100%;">
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px;"><span>Xin chào,</span></div>
+                                <br>
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px;">Vui lòng sử dụng OTP được cung cấp bên dưới để xác thực tài khoản Selina của bạn:</div>
+                                <br>
+                                <div style="text-align:center; font-size:30px; font-weight:bold; font-family:open Sans Helvetica, Arial, sans-serif">${otp}</div>
+                                <br> 
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:16px">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email hoặc liên hệ với chúng tôi.</div>
+                                <br>
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px">Chân thành cảm ơn! <br/><br/><b>Selina team</b></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            `
+        )
     }
     catch (e) {
         console.log(e)
@@ -56,18 +83,18 @@ const create_new_account = async (req, res, next) => {
         }
         register_res = Boolean(await new_account.save())
 
-        const user_id = new_account.user_id
-        const permissions = INIT_ROLE_PERMISSIONS[new_account.user_type].permissions
+        // const user_id = new_account.user_id
+        // const permissions = INIT_ROLE_PERMISSIONS[new_account.user_type].permissions
 
-        if (Boolean(permissions)) {
-            axios.post(
-                `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/add-user-permissions`,
-                {
-                    user_id: user_id,
-                    permission_codes: permissions
-                }
-            )
-        }
+        // if (Boolean(permissions)) {
+        //     axios.post(
+        //         `${SELINA_SERVICE_INFOS.auth[APP_ENV].domain}/add-user-permissions`,
+        //         {
+        //             user_id: user_id,
+        //             permission_codes: permissions
+        //         }
+        //     )
+        // }
 
 
         if (register_res) {
@@ -160,7 +187,7 @@ const recover_password = async (req, res, next) => {
         
         let new_password = ""
         
-        for(let i = 0; i < 8; i++) {
+        for(let i = 0; i < 12; i++) {
             new_password += characters_numbers_spec_chars[
                 Math.floor(Math.random() * characters_numbers_spec_chars.length)
             ]
@@ -181,7 +208,34 @@ const recover_password = async (req, res, next) => {
                 message="Không có tài khoản nào được đăng ký với email này!"
             ))
         }
-        send_mail(email, "[Selina] Recover Password", new_password)
+        send_mail(
+            email, 
+            "[Selina] Khôi phục mật khẩu.", 
+            `
+                <div>
+                    <div style="background-color:#f0f5fa;">
+                        <div style="padding-bottom:10px; padding-top:10px; margin: 0 auto; border-radius: 8px;">
+                            <div style="width:100%; border-radius: 8px;">
+                                <img style="border-radius: 8px; text-align:center; width:125px; margin: 20px auto; display: block;" src="https://firebasestorage.googleapis.com/v0/b/selina-d8690.appspot.com/o/Selina%20small.png?alt=media&token=9aeb31a4-6a94-4743-832f-6c065ca0dbdf">
+                            </div>
+                        </div>
+                        <div style="background-color:#fff; padding-bottom:20px; padding-top:20px">
+                            <div style="vertical-align:middle; width:100%;">
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px;"><span>Xin chào,</span></div>
+                                <br>
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px;">Hệ thống đã khôi phục mật khẩu của bạn, hãy sử dụng mật khẩu dưới đây để đăng nhập Selina:</div>
+                                <br>
+                                <div style="text-align:center; font-size:30px; font-weight:bold; font-family:open Sans Helvetica, Arial, sans-serif">${new_password}</div>
+                                <br> 
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:16px">Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email hoặc liên hệ với chúng tôi.</div>
+                                <br>
+                                <div style="text-align:center; font-size:20px; font-family:open Sans Helvetica, Arial, sans-serif; padding-left:25px; padding-right:25px">Chân thành cảm ơn! <br/><br/><b>Selina team</b></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            `    
+        )
         return res.json(response_data())
     }
     catch (err) {
