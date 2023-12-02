@@ -41,6 +41,11 @@ app.use(function (req, res, next) {
 app.get("/", (req, res) => {
     res.send(`Selina - Profile Service (${APP_ENV})`)
 })
+
+app.get("/health", (req, res) => {
+    res.json({})
+})
+
 app.use(ROUTES_PREFIX + "", account_router)
 app.use(ROUTES_PREFIX + "", user_info_router)
 app.use(ROUTES_PREFIX + "", upload_router)
